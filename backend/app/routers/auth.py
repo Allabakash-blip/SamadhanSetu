@@ -2,7 +2,7 @@ from fastapi import APIRouter, Depends, HTTPException, UploadFile, File
 from sqlalchemy.orm import Session
 from sqlalchemy import or_
 from app.database.connection import get_db
-from app.models.user import User, UserRole, AccountStatus, CitizenProfile, UniversityProfile, IndustryProfile, GovernmentProfile
+from app.models.user import User, UserRole, AccountStatus, CitizenProfile, UniversityProfile, IndustryProfile, GovernmentProfile, CivicOrganizationProfile
 from app.schemas.auth import RegisterRequest, LoginRequest, GoogleLoginRequest, CompleteProfileRequest
 from app.core.security import hash_password, verify_password, create_access_token, get_current_user
 from app.services.google_auth import verify_google_credential
@@ -129,13 +129,48 @@ def complete_profile(
 
     elif role == "GOVERNMENT":
         if not payload.government_department: raise HTTPException(400, "Government department is required")
-        profile = current_user.government_profile or GovernmentProfile(user_id=current_user.id, department=payload.government_department)
+        profile = current_user.government_profile or GovernmentProfile(
+    user_id=current_user.id,
+    department=payload.government_department,
+)
         profile.department = payload.government_department
         profile.designation = payload.designation
         profile.official_id = payload.official_id
         profile.state_id = payload.state_id
         profile.district_id = payload.district_id
         db.add(profile); current_user.account_status = AccountStatus.PENDING
+
+    elif role in {"COMMUNITY_GROUP", "PRI", "ULB"}:
+        if not payload.organization_name:
+            raise HTTPException(400, "Organization name is required")
+        expected_type = {
+            "COMMUNITY_GROUP": "COMMUNITY_GROUP",
+            "PRI": "PRI",
+            "ULB": "ULB",
+        }[role]
+        if payload.organization_type and payload.organization_type.upper() != expected_type:
+            raise HTTPException(400, "Organization type does not match the selected role")
+        profile = current_user.civic_profile or CivicOrganizationProfile(
+            user_id=current_user.id,
+            organization_name=payload.organization_name,
+            organization_type=expected_type,
+        )
+        profile.organization_name = payload.organization_name
+        profile.organization_type = expected_type
+        profile.registration_number = payload.organization_registration_number
+        profile.designation = payload.designation
+        profile.address = payload.address_line
+        profile.state_id = payload.state_id
+        profile.district_id = payload.district_id
+        profile.block_id = payload.block_id
+        profile.village_id = payload.village_id
+        profile.city = payload.city
+        profile.ward = payload.ward
+        profile.pincode = payload.pincode
+        profile.latitude = payload.latitude
+        profile.longitude = payload.longitude
+        db.add(profile)
+        current_user.account_status = AccountStatus.PENDING
 
     db.commit(); db.refresh(current_user)
     return {"message": "Profile completed", "user": user_dict(current_user)}

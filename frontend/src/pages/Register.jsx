@@ -3,7 +3,15 @@ import { Link, useNavigate } from "react-router-dom";
 import api from "../services/api";
 import { useAuth } from "../context/AuthContext";
 
-const roles=[["CITIZEN","Citizen"],["UNIVERSITY","University / Higher Education"],["INDUSTRY","Industry / Startup / MSME / CSR"],["GOVERNMENT","Government Department"]];
+const roles=[
+  ["CITIZEN","Individual Citizen"],
+  ["COMMUNITY_GROUP","Community Group"],
+  ["PRI","Panchayati Raj Institution (PRI)"],
+  ["ULB","Urban Local Body (ULB)"],
+  ["UNIVERSITY","University / Higher Education"],
+  ["INDUSTRY","Industry / Startup / MSME / CSR"],
+  ["GOVERNMENT","Government Department"]
+];
 
 export default function Register() {
   const [form,setForm]=useState({name:"",email:"",phone:"",password:"",confirm:"",role:"CITIZEN"});

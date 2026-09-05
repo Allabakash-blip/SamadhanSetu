@@ -13,7 +13,7 @@ export default function CompleteProfile() {
     latitude:null,longitude:null,university_name:"",university_type:"",
     registration_number:"",department:"",designation:"",city:"",expertise:"",
     company_name:"",company_type:"",website:"",available_support:"",
-    government_department:"",official_id:""
+    government_department:"",official_id:"",organization_name:"",organization_type:"",organization_registration_number:"",ward:""
   });
 
   async function submit(e) {
@@ -36,7 +36,7 @@ export default function CompleteProfile() {
       <label>Profile Picture<input type="file" accept="image/png,image/jpeg,image/webp" onChange={e=>setPicture(e.target.files?.[0]||null)}/></label>
       <label>Mobile Number<input value={form.phone} onChange={e=>setForm({...form,phone:e.target.value})}/></label>
 
-      {(form.role==="CITIZEN"||form.role==="UNIVERSITY"||form.role==="INDUSTRY")&&<LocationFields form={form} setForm={setForm}/>}
+      {(["CITIZEN","COMMUNITY_GROUP","PRI","ULB","UNIVERSITY","INDUSTRY","GOVERNMENT"].includes(form.role))&&<LocationFields form={form} setForm={setForm}/>}
 
       {form.role==="UNIVERSITY"&&<section className="form-section">
         <div className="section-title">University information</div><div className="grid-2">
@@ -61,6 +61,20 @@ export default function CompleteProfile() {
         <label>Areas of Expertise<textarea value={form.expertise} onChange={e=>setForm({...form,expertise:e.target.value})}/></label>
         <label>Available Support<textarea value={form.available_support} onChange={e=>setForm({...form,available_support:e.target.value})} placeholder="Mentoring, funding, hardware, testing..."/></label>
         <div className="notice">Industry accounts are PENDING until administrator verification.</div>
+      </section>}
+
+      {["COMMUNITY_GROUP","PRI","ULB"].includes(form.role)&&<section className="form-section">
+        <div className="section-title">
+          {form.role==="COMMUNITY_GROUP" ? "Community group information" : form.role==="PRI" ? "Panchayati Raj Institution information" : "Urban Local Body information"}
+        </div>
+        <div className="grid-2">
+          <label>Organization / Institution Name<input required value={form.organization_name} onChange={e=>setForm({...form,organization_name:e.target.value,organization_type:form.role})}/></label>
+          <label>Registration / Institution ID<input value={form.organization_registration_number} onChange={e=>setForm({...form,organization_registration_number:e.target.value})}/></label>
+          <label>Representative Designation<input required value={form.designation} onChange={e=>setForm({...form,designation:e.target.value})}/></label>
+          {form.role==="ULB"&&<label>Ward<input value={form.ward} onChange={e=>setForm({...form,ward:e.target.value})}/></label>}
+          {form.role==="ULB"&&<label>City / Town<input value={form.city} onChange={e=>setForm({...form,city:e.target.value})}/></label>}
+        </div>
+        <div className="notice">This account is PENDING until administrator verification. Once approved, it can submit and track societal challenges on behalf of the organization.</div>
       </section>}
 
       {form.role==="GOVERNMENT"&&<section className="form-section">

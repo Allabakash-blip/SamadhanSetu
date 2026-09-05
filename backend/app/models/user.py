@@ -9,6 +9,9 @@ class UserRole(str, enum.Enum):
     UNIVERSITY = "UNIVERSITY"
     INDUSTRY = "INDUSTRY"
     GOVERNMENT = "GOVERNMENT"
+    COMMUNITY_GROUP = "COMMUNITY_GROUP"
+    PRI = "PRI"
+    ULB = "ULB"
     ADMIN = "ADMIN"
 
 class AccountStatus(str, enum.Enum):
@@ -35,6 +38,7 @@ class User(Base):
     university_profile = relationship("UniversityProfile", back_populates="user", uselist=False)
     industry_profile = relationship("IndustryProfile", back_populates="user", uselist=False)
     government_profile = relationship("GovernmentProfile", back_populates="user", uselist=False)
+    civic_profile = relationship("CivicOrganizationProfile", back_populates="user", uselist=False)
     problems = relationship(
     "Problem",
     back_populates="user",
@@ -132,3 +136,28 @@ class GovernmentProfile(Base):
 
 
 
+
+
+class CivicOrganizationProfile(Base):
+    """Profile for non-individual challenge submitters: community groups, PRIs and ULBs."""
+    __tablename__ = "civic_organization_profiles"
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=True)
+    user_id: Mapped[int] = mapped_column(ForeignKey("users.id"), unique=True, nullable=False, index=True)
+    organization_name: Mapped[str] = mapped_column(String(255), nullable=False)
+    organization_type: Mapped[str] = mapped_column(String(40), nullable=False)
+    registration_number: Mapped[str | None] = mapped_column(String(120), nullable=True)
+    designation: Mapped[str | None] = mapped_column(String(150), nullable=True)
+    address: Mapped[str | None] = mapped_column(Text, nullable=True)
+    state_id: Mapped[int | None] = mapped_column(ForeignKey("states.id"), nullable=True)
+    district_id: Mapped[int | None] = mapped_column(ForeignKey("districts.id"), nullable=True)
+    block_id: Mapped[int | None] = mapped_column(ForeignKey("blocks.id"), nullable=True)
+    village_id: Mapped[int | None] = mapped_column(ForeignKey("villages.id"), nullable=True)
+    city: Mapped[str | None] = mapped_column(String(150), nullable=True)
+    ward: Mapped[str | None] = mapped_column(String(100), nullable=True)
+    pincode: Mapped[str | None] = mapped_column(String(10), nullable=True)
+    latitude: Mapped[float | None] = mapped_column(Float, nullable=True)
+    longitude: Mapped[float | None] = mapped_column(Float, nullable=True)
+    verification_status: Mapped[str] = mapped_column(String(30), default="PENDING", nullable=False)
+
+    user = relationship("User", back_populates="civic_profile")

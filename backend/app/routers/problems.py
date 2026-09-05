@@ -4,8 +4,8 @@ from sqlalchemy.orm import Session
 from sqlalchemy.exc import SQLAlchemyError
 
 from app.database.connection import get_db
-from app.core.security import require_roles
-from app.models.user import User, UserRole, State, District, Block, Village
+from app.core.security import require_roles, get_current_user
+from app.models.user import User, UserRole, AccountStatus, State, District, Block, Village
 from app.models.problem import Problem, ProblemMedia, ProblemStatus, ProblemPriority
 from app.schemas.problem import ProblemResponse
 from app.services.cloudinary_service import upload_problem_media
@@ -49,9 +49,17 @@ async def create_problem(
     problem_data: str = Form(...),
     images: list[UploadFile] = File(default=[]),
     videos: list[UploadFile] = File(default=[]),
-    current_user: User = Depends(require_roles(UserRole.CITIZEN)),
+    current_user: User = Depends(get_current_user),
     db: Session = Depends(get_db),
 ):
+    allowed_roles = {
+        UserRole.CITIZEN, UserRole.COMMUNITY_GROUP, UserRole.PRI,
+        UserRole.ULB, UserRole.GOVERNMENT
+    }
+    if current_user.role not in allowed_roles:
+        raise HTTPException(status_code=403, detail="Only approved challenge submitter accounts can report problems.")
+    if current_user.role != UserRole.CITIZEN and current_user.account_status != AccountStatus.ACTIVE:
+        raise HTTPException(status_code=403, detail="Your organization/department account must be approved by an administrator before submitting challenges.")
     try:
         data = json.loads(problem_data)
     except json.JSONDecodeError:
@@ -74,8 +82,17 @@ async def create_problem(
     village_id = _optional_int(data.get("village_id"))
     _validate_location(db, state_id, district_id, block_id, village_id)
 
+    reporter_type = {
+        UserRole.CITIZEN: "INDIVIDUAL_CITIZEN",
+        UserRole.COMMUNITY_GROUP: "COMMUNITY_GROUP",
+        UserRole.PRI: "PRI",
+        UserRole.ULB: "ULB",
+        UserRole.GOVERNMENT: "GOVERNMENT_DEPARTMENT",
+    }[current_user.role]
+
     problem = Problem(
         user_id=current_user.id,
+        reporter_type=reporter_type,
         title=title,
         description=description,
         category=category,
@@ -118,12 +135,12 @@ async def create_problem(
 
 
 @router.get("/mine", response_model=list[ProblemResponse])
-def my_problems(current_user: User = Depends(require_roles(UserRole.CITIZEN)), db: Session = Depends(get_db)):
+def my_problems(current_user: User = Depends(get_current_user), db: Session = Depends(get_db)):
     return db.query(Problem).filter(Problem.user_id == current_user.id).order_by(Problem.created_at.desc()).all()
 
 
 @router.get("/{problem_id}", response_model=ProblemResponse)
-def get_my_problem(problem_id: int, current_user: User = Depends(require_roles(UserRole.CITIZEN)), db: Session = Depends(get_db)):
+def get_my_problem(problem_id: int, current_user: User = Depends(get_current_user), db: Session = Depends(get_db)):
     problem = db.query(Problem).filter(Problem.id == problem_id, Problem.user_id == current_user.id).first()
     if not problem:
         raise HTTPException(status_code=404, detail="Problem not found.")

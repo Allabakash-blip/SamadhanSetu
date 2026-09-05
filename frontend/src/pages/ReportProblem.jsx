@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
 import api from "../services/api";
+import { useAuth } from "../context/AuthContext";
 
 const categories = [
   "Water Resources",
@@ -20,7 +21,17 @@ const categories = [
 
 export default function ReportProblem() {
   const navigate = useNavigate();
+  const { user } = useAuth();
+const submitterLabels = {
+  CITIZEN: "INDIVIDUAL CITIZEN",
+  COMMUNITY_GROUP: "COMMUNITY GROUP",
+  PRI: "PANCHAYATI RAJ INSTITUTION",
+  ULB: "URBAN LOCAL BODY",
+  GOVERNMENT: "GOVERNMENT DEPARTMENT",
+};
 
+const submitterLabel =
+  submitterLabels[user?.role] || "CHALLENGE SUBMITTER";
   const [form, setForm] = useState({
     title: "",
     description: "",
@@ -291,8 +302,8 @@ export default function ReportProblem() {
       <div className="dashboard-head">
         <div>
           <div className="eyebrow">
-            CITIZEN
-          </div>
+  {submitterLabel}
+</div>
 
           <h1>Report a Problem</h1>
 
