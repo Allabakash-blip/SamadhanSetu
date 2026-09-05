@@ -1,0 +1,14 @@
+import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
+import api from "../services/api";
+
+export default function AdminIndustryPartnerships(){
+ const navigate=useNavigate();const [offers,setOffers]=useState([]);const [loading,setLoading]=useState(true);const [error,setError]=useState("");const [busy,setBusy]=useState(null);
+ async function load(){try{setLoading(true);const r=await api.get("/industry/admin/offers");setOffers(r.data)}catch(e){setError(e.response?.data?.detail||"Unable to load industry offers.")}finally{setLoading(false)}}
+ useEffect(()=>{load()},[]);
+ async function decide(id,action){if(action==="reject"&&!window.confirm("Reject this industry support offer?"))return;try{setBusy(id);await api.put(`/industry/admin/offers/${id}/${action}`);await load()}catch(e){alert(e.response?.data?.detail||"Unable to process offer.")}finally{setBusy(null)}}
+ if(loading)return <main className="page"><div className="panel">Loading industry partnerships...</div></main>;
+ return <main className="page"><div className="dashboard-head"><div><div className="eyebrow">ADMINISTRATION · MILESTONE 8</div><h1>Industry Partnerships</h1><p className="muted">Review industry offers and connect practical industry support to citizen challenges and institutional projects.</p></div><button className="btn secondary" onClick={()=>navigate("/admin")}>← Admin Dashboard</button></div>{error&&<div className="error">{error}</div>}
+ <section className="panel"><div className="admin-section-header"><div><h2>Support Offers</h2><p className="muted">Approve offers to create an active industry partnership.</p></div></div>{offers.length===0?<div className="empty-state"><strong>No industry support offers</strong><p>Approved industry accounts can submit support offers from Available Projects.</p></div>:<div className="admin-table-wrap"><table className="admin-table"><thead><tr><th>Industry</th><th>Problem</th><th>Support</th><th>Offer</th><th>Status</th><th>Actions</th></tr></thead><tbody>{offers.map(o=><tr key={o.id}><td><strong>{o.industry?.organization}</strong><br/><small>{o.industry?.name}</small></td><td>{o.problem_title}<br/><small>{o.problem_category}</small></td><td>{o.support_type.replaceAll("_"," ")}</td><td>{o.title}<br/><small>{o.amount||"No amount"} · {o.duration||"No duration"}</small></td><td><span className={o.status==="ACCEPTED"?"status-approved":o.status==="REJECTED"?"status-rejected":"status-pending"}>{o.status}</span></td><td>{o.status==="PROPOSED"?<div className="table-actions"><button className="btn approve" disabled={busy===o.id} onClick={()=>decide(o.id,"accept")}>Approve</button><button className="btn reject" disabled={busy===o.id} onClick={()=>decide(o.id,"reject")}>Reject</button></div>:<span className="muted">Processed</span>}</td></tr>)}</tbody></table></div>}</section>
+ </main>;
+}
