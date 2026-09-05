@@ -25,7 +25,7 @@ Create/configure `backend/.env` using the environment variables required by the 
 Then start the backend:
 
 ```powershell
-uvicorn app:app --reload --port 8000
+uvicorn app.main:app --reload --port 8000
 ```
 
 Backend:
