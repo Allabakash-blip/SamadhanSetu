@@ -11,6 +11,7 @@ from app.models.user import (
     UniversityProfile,
     IndustryProfile,
     GovernmentProfile,
+    CivicOrganizationProfile,
 )
 
 router = APIRouter(prefix="/admin", tags=["Admin"])
@@ -19,12 +20,26 @@ router = APIRouter(prefix="/admin", tags=["Admin"])
 def profile_verification_status(user: User):
     if user.role == UserRole.UNIVERSITY and user.university_profile:
         return user.university_profile.verification_status
+
     if user.role == UserRole.INDUSTRY and user.industry_profile:
         return user.industry_profile.verification_status
+
     if user.role == UserRole.GOVERNMENT and user.government_profile:
         return user.government_profile.verification_status
+
+    if user.role in {
+        UserRole.COMMUNITY_GROUP,
+        UserRole.PRI,
+        UserRole.ULB,
+    } and user.civic_profile:
+        return user.civic_profile.verification_status
+
     if user.role == UserRole.CITIZEN:
         return "NOT_REQUIRED"
+
+    if user.role == UserRole.ADMIN:
+        return None
+
     return None
 
 
@@ -163,11 +178,20 @@ def pending_verifications(
     db: Session = Depends(get_db),
 ):
     users = (
-        db.query(User)
-        .filter(User.role.in_([UserRole.UNIVERSITY, UserRole.INDUSTRY, UserRole.GOVERNMENT]))
-        .order_by(User.created_at.desc())
-        .all()
+    db.query(User)
+    .filter(
+        User.role.in_([
+            UserRole.UNIVERSITY,
+            UserRole.INDUSTRY,
+            UserRole.GOVERNMENT,
+            UserRole.COMMUNITY_GROUP,
+            UserRole.PRI,
+            UserRole.ULB,
+        ])
     )
+    .order_by(User.created_at.desc())
+    .all()
+)
     return [user_summary(user) for user in users if profile_verification_status(user) == "PENDING"]
 
 
@@ -195,10 +219,20 @@ def get_user(
 def get_verification_profile(user: User):
     if user.role == UserRole.UNIVERSITY:
         return user.university_profile
+
     if user.role == UserRole.INDUSTRY:
         return user.industry_profile
+
     if user.role == UserRole.GOVERNMENT:
         return user.government_profile
+
+    if user.role in {
+        UserRole.COMMUNITY_GROUP,
+        UserRole.PRI,
+        UserRole.ULB,
+    }:
+        return user.civic_profile
+
     return None
 
 

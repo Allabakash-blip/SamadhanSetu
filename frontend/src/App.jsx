@@ -37,9 +37,9 @@ export default function App() {
         <Route path="/admin/problems/:problemId" element={<ProtectedRoute roles={["ADMIN"]}><AdminProblemDetails /></ProtectedRoute>} />
         <Route path="/admin/analytics" element={<ProtectedRoute roles={["ADMIN"]}><AdminAnalytics /></ProtectedRoute> } />
         <Route path="/admin/industry-partnerships" element={<ProtectedRoute roles={["ADMIN"]}><AdminIndustryPartnerships /></ProtectedRoute>} />
-        <Route path="/report-problem" element={<ProtectedRoute roles={["CITIZEN"]}><ReportProblem /></ProtectedRoute>} />
-        <Route path="/my-problems" element={<ProtectedRoute roles={["CITIZEN"]}><MyProblems /></ProtectedRoute>} />
-        <Route path="/my-problems/:problemId" element={<ProtectedRoute roles={["CITIZEN"]}><ProblemDetails /></ProtectedRoute>} />
+        <Route path="/report-problem" element={<ProtectedRoute roles={["CITIZEN","COMMUNITY_GROUP","PRI","ULB","GOVERNMENT"]}><ReportProblem /></ProtectedRoute>} />
+        <Route path="/my-problems" element={<ProtectedRoute roles={["CITIZEN","COMMUNITY_GROUP","PRI","ULB","GOVERNMENT"]}><MyProblems /></ProtectedRoute>} />
+        <Route path="/my-problems/:problemId" element={<ProtectedRoute roles={["CITIZEN","COMMUNITY_GROUP","PRI","ULB","GOVERNMENT"]}><ProblemDetails /></ProtectedRoute>} />
         <Route path="/representative/problems" element={<ProtectedRoute roles={["UNIVERSITY","INDUSTRY","GOVERNMENT"]}><RepresentativeProblems /></ProtectedRoute>} />
         <Route path="/representative/problems/:problemId" element={<ProtectedRoute roles={["UNIVERSITY","INDUSTRY","GOVERNMENT"]}><RepresentativeProblemDetails /></ProtectedRoute>} />
         <Route path="/industry/projects" element={<ProtectedRoute roles={["INDUSTRY"]}><IndustryProjects /></ProtectedRoute>} />

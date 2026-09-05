@@ -36,6 +36,53 @@ app.include_router(industry.router, prefix="/api")
 def startup():
     Base.metadata.create_all(bind=engine)
 
+    # Lightweight compatibility migrations for existing MySQL installations.
+    # SQLAlchemy create_all() creates new tables but does not alter existing
+    # columns/enums, so these checks keep upgraded local databases working.
+    with engine.begin() as connection:
+        try:
+            connection.execute(text("""
+                ALTER TABLE users
+                MODIFY COLUMN role ENUM(
+                    'CITIZEN','UNIVERSITY','INDUSTRY','GOVERNMENT',
+                    'COMMUNITY_GROUP','PRI','ULB','ADMIN'
+                ) NULL
+            """))
+        except Exception:
+            pass
+
+        try:
+            connection.execute(text("""
+                ALTER TABLE problems
+                ADD COLUMN reporter_type VARCHAR(40) NOT NULL DEFAULT 'INDIVIDUAL_CITIZEN'
+            """))
+        except Exception:
+            pass
+
+        try:
+            connection.execute(text("""
+                CREATE INDEX ix_problems_reporter_type ON problems (reporter_type)
+            """))
+        except Exception:
+            pass
+
+        # Existing challenges remain individual-citizen challenges unless
+        # their user account explicitly maps to an institutional submitter.
+        try:
+            connection.execute(text("""
+                UPDATE problems p
+                JOIN users u ON u.id = p.user_id
+                SET p.reporter_type = CASE u.role
+                    WHEN 'COMMUNITY_GROUP' THEN 'COMMUNITY_GROUP'
+                    WHEN 'PRI' THEN 'PRI'
+                    WHEN 'ULB' THEN 'ULB'
+                    WHEN 'GOVERNMENT' THEN 'GOVERNMENT_DEPARTMENT'
+                    ELSE 'INDIVIDUAL_CITIZEN'
+                END
+            """))
+        except Exception:
+            pass
+
 @app.get("/")
 def root():
     return {"message":"SIH Social Innovation Portal API is running"}

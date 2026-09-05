@@ -1,6 +1,6 @@
 from app.models.user import (
     User, UserRole, AccountStatus, State, District, Block, Village,
-    CitizenProfile, UniversityProfile, IndustryProfile, GovernmentProfile
+    CitizenProfile, UniversityProfile, IndustryProfile, GovernmentProfile, CivicOrganizationProfile
 )
 from app.models.problem import (
     Problem, ProblemMedia, ProblemStatus, ProblemPriority,

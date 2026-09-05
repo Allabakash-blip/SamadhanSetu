@@ -127,6 +127,10 @@ class Problem(Base):
         index=True,
     )
 
+    # Type of entity that submitted the challenge. Kept separately from the
+    # user role so analytics and admin review can clearly identify the source.
+    reporter_type = Column(String(40), nullable=False, default="INDIVIDUAL_CITIZEN", index=True)
+
     title = Column(
         String(255),
         nullable=False,

@@ -7,7 +7,10 @@ const content = {
   CITIZEN: { title: "Citizen Dashboard", subtitle: "Report local societal challenges and follow their progress.", cards: ["My Problems", "Under Review", "In Progress", "Resolved"], actions: ["Report a Problem", "My Submissions"] },
   UNIVERSITY: { title: "University Dashboard", subtitle: "Review challenges, build multidisciplinary teams and submit solutions.", cards: ["Assigned Challenges", "Active Projects", "Teams", "Completed"], actions: ["Assigned Problems", "My Projects", "My Teams"] },
   INDUSTRY: { title: "Industry Dashboard", subtitle: "Support projects through mentoring, funding, technology and testing.", cards: ["Available Projects", "Supported Projects", "Active Partnerships", "Support Offers"], actions: ["Available Projects", "My Support"] },
-  GOVERNMENT: { title: "Government Dashboard", subtitle: "Monitor challenges, participation and project impact.", cards: ["Total Users", "Pending Validation", "Universities", "Industries"], actions: ["Assigned Problems", "Analytics", "Map"] },
+  COMMUNITY_GROUP: { title: "Community Group Dashboard", subtitle: "Represent your community and submit local societal challenges.", cards: ["My Challenges", "Under Review", "In Progress", "Resolved"], actions: ["Report a Problem", "My Submissions"] },
+  PRI: { title: "PRI Dashboard", subtitle: "Submit and track challenges on behalf of your Panchayati Raj Institution.", cards: ["My Challenges", "Under Review", "In Progress", "Resolved"], actions: ["Report a Problem", "My Submissions"] },
+  ULB: { title: "ULB Dashboard", subtitle: "Submit and track urban civic challenges for your local body.", cards: ["My Challenges", "Under Review", "In Progress", "Resolved"], actions: ["Report a Problem", "My Submissions"] },
+  GOVERNMENT: { title: "Government Dashboard", subtitle: "Submit departmental challenges and monitor participation and project impact.", cards: ["Total Users", "Pending Validation", "Universities", "Industries"], actions: ["Report a Problem", "My Submissions", "Analytics"] },
   ADMIN: { title: "Admin Dashboard", subtitle: "Verify organizations and manage platform users.", cards: ["Total Users", "Pending Accounts", "Universities", "Industries"], actions: ["Verify Accounts", "Manage Users", "Manage Problems"] },
 };
 
@@ -33,7 +36,7 @@ export default function Dashboard() {
   }, [user?.role]);
 
   const showsRealCounts = user?.role === "ADMIN" || user?.role === "GOVERNMENT";
-  const values = user?.role === "CITIZEN" && summary
+  const values = ["CITIZEN","COMMUNITY_GROUP","PRI","ULB"].includes(user?.role) && summary
     ? [summary.counts.my_problems, summary.counts.under_review, summary.counts.in_progress, summary.counts.resolved]
     : user?.role === "UNIVERSITY" && summary
       ? [summary.counts.assigned_challenges, summary.counts.active_projects, summary.counts.teams, summary.counts.completed]
@@ -52,11 +55,11 @@ export default function Dashboard() {
       }
       return;
     }
-    if (user?.role === "CITIZEN" && action === "Report a Problem") {
+    if (["CITIZEN","COMMUNITY_GROUP","PRI","ULB","GOVERNMENT"].includes(user?.role) && action === "Report a Problem") {
       navigate("/report-problem");
       return;
     }
-    if (user?.role === "CITIZEN" && action === "My Submissions") {
+    if (["CITIZEN","COMMUNITY_GROUP","PRI","ULB","GOVERNMENT"].includes(user?.role) && action === "My Submissions") {
       navigate("/my-problems");
       return;
     }
