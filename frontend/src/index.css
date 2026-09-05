@@ -51,31 +51,235 @@
 }
 
 /* Milestone 7: AI classification and representative matching */
-.ai-panel { margin-bottom: 20px; }
-.ai-panel-head, .ai-matches-head { display:flex; justify-content:space-between; align-items:flex-start; gap:20px; }
-.ai-panel-head h2 { margin: 5px 0 6px; }
-.ai-analysis-grid { display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:12px; margin-top:18px; }
-.ai-classification-card { border:1px solid rgba(127,127,127,.18); border-radius:14px; padding:16px; min-height:125px; }
-.ai-classification-card strong { display:block; font-size:1.1rem; margin:7px 0; }
-.ai-label { font-size:.76rem; text-transform:uppercase; letter-spacing:.08em; opacity:.65; font-weight:700; }
-.ai-classification-card p { font-size:.86rem; margin:7px 0 0; }
-.ai-confidence { margin-top:14px; }
-.ai-confidence-head { display:flex; justify-content:space-between; font-size:.82rem; margin-bottom:5px; }
-.ai-tags { display:flex; flex-wrap:wrap; gap:6px; margin-top:8px; }
-.ai-tags span { border:1px solid rgba(127,127,127,.2); border-radius:999px; padding:4px 8px; font-size:.76rem; }
-.ai-matches { margin-top:22px; border-top:1px solid rgba(127,127,127,.18); padding-top:18px; }
-.ai-matches h3 { margin:0 0 4px; }
-.ai-match-list { display:grid; gap:10px; margin-top:12px; }
-.ai-match-card { display:grid; grid-template-columns:42px 1fr auto; align-items:center; gap:12px; border:1px solid rgba(127,127,127,.18); border-radius:14px; padding:13px 15px; }
-.ai-rank { width:32px; height:32px; display:grid; place-items:center; border-radius:50%; background:rgba(127,127,127,.12); font-weight:800; }
-.ai-match-main { display:flex; flex-direction:column; gap:2px; }
-.ai-match-main strong { font-size:1rem; }
-.ai-match-main > span { font-size:.84rem; opacity:.7; }
-.ai-reasons { display:flex; flex-wrap:wrap; gap:10px; margin-top:7px; }
-.ai-reasons small { opacity:.75; }
-.ai-score { min-width:70px; text-align:right; display:flex; flex-direction:column; }
-.ai-score b { font-size:1.15rem; }
-.ai-score span { font-size:.72rem; opacity:.65; }
-.ai-empty { margin-top:12px; border:1px dashed rgba(127,127,127,.3); border-radius:12px; padding:16px; }
-@media (max-width: 1000px) { .ai-analysis-grid { grid-template-columns:repeat(2,minmax(0,1fr)); } }
-@media (max-width: 650px) { .ai-analysis-grid { grid-template-columns:1fr; } .ai-panel-head, .ai-matches-head { flex-direction:column; } .ai-match-card { grid-template-columns:34px 1fr; } .ai-score { grid-column:2; text-align:left; } }
+
+.ai-panel {
+  margin-bottom: 20px;
+}
+
+.ai-panel-head,
+.ai-matches-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 20px;
+}
+
+.ai-panel-head h2 {
+  margin: 5px 0 6px;
+}
+
+.ai-analysis-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 16px;
+  margin-top: 20px;
+}
+
+.ai-classification-card {
+  border: 1px solid rgba(127, 127, 127, 0.18);
+  border-radius: 14px;
+  padding: 18px;
+  min-height: 140px;
+  background: rgba(255, 255, 255, 0.45);
+}
+
+.ai-classification-card strong {
+  display: block;
+  font-size: 1.1rem;
+  margin: 8px 0;
+}
+
+.ai-label {
+  display: block;
+  font-size: 0.76rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  opacity: 0.65;
+  font-weight: 700;
+}
+
+.ai-classification-card p {
+  font-size: 0.86rem;
+  margin: 8px 0 0;
+  line-height: 1.5;
+}
+
+.ai-confidence {
+  margin-top: 14px;
+}
+
+.ai-confidence-head {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.82rem;
+  margin-bottom: 6px;
+}
+
+.ai-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 10px;
+}
+
+.ai-tags span {
+  display: inline-block;
+  border: 1px solid rgba(127, 127, 127, 0.2);
+  border-radius: 999px;
+  padding: 5px 9px;
+  font-size: 0.76rem;
+}
+
+.ai-matches {
+  margin-top: 24px;
+  border-top: 1px solid rgba(127, 127, 127, 0.18);
+  padding-top: 20px;
+}
+
+.ai-matches h3 {
+  margin: 0 0 4px;
+}
+
+.ai-match-list {
+  display: grid;
+  gap: 12px;
+  margin-top: 14px;
+}
+
+.ai-match-card {
+  display: grid;
+  grid-template-columns: 42px 1fr auto;
+  align-items: center;
+  gap: 14px;
+  border: 1px solid rgba(127, 127, 127, 0.18);
+  border-radius: 14px;
+  padding: 15px;
+  background: rgba(255, 255, 255, 0.35);
+}
+
+.ai-rank {
+  width: 32px;
+  height: 32px;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  background: rgba(127, 127, 127, 0.12);
+  font-weight: 800;
+}
+
+.ai-match-main {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  min-width: 0;
+}
+
+.ai-match-main strong {
+  font-size: 1rem;
+}
+
+.ai-match-main > span {
+  font-size: 0.84rem;
+  opacity: 0.7;
+}
+
+.ai-reasons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 8px;
+}
+
+.ai-reasons small {
+  opacity: 0.75;
+}
+
+.ai-score {
+  min-width: 70px;
+  text-align: right;
+  display: flex;
+  flex-direction: column;
+}
+
+.ai-score b {
+  font-size: 1.15rem;
+}
+
+.ai-score span {
+  font-size: 0.72rem;
+  opacity: 0.65;
+}
+
+.ai-empty {
+  margin-top: 12px;
+  border: 1px dashed rgba(127, 127, 127, 0.3);
+  border-radius: 12px;
+  padding: 16px;
+}
+
+@media (max-width: 1000px) {
+  .ai-analysis-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 650px) {
+  .ai-analysis-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .ai-panel-head,
+  .ai-matches-head {
+    flex-direction: column;
+  }
+
+  .ai-match-card {
+    grid-template-columns: 34px 1fr;
+  }
+
+  .ai-score {
+    grid-column: 2;
+    text-align: left;
+  }
+}
+
+/* TEST AI CSS */
+
+.ai-analysis-grid {
+  display: grid !important;
+  grid-template-columns: repeat(4, minmax(0, 1fr)) !important;
+  gap: 16px !important;
+}
+
+.ai-classification-card {
+  border: 2px solid red !important;
+  padding: 18px !important;
+  border-radius: 14px !important;
+  background: white !important;
+}
+
+.ai-match-card {
+  border: 2px solid blue !important;
+  padding: 15px !important;
+}
+
+/* TEMPORARY CSS TEST */
+
+.ai-analysis-grid {
+  display: grid !important;
+  grid-template-columns: repeat(4, minmax(0, 1fr)) !important;
+  gap: 16px !important;
+}
+
+.ai-classification-card {
+  border: 3px solid red !important;
+  border-radius: 14px !important;
+  padding: 18px !important;
+  background: white !important;
+}
+
+.ai-match-card {
+  border: 3px solid blue !important;
+  border-radius: 14px !important;
+  padding: 15px !important;
+}
