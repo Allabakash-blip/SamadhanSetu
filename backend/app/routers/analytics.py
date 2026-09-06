@@ -63,6 +63,59 @@ def analytics_overview(
             SolutionStatus.VERIFIED,
         }
     )
+        # Advanced impact metrics
+    resolved_problem_count = sum(
+        1 for p in problems if p.status == ProblemStatus.CLOSED
+    )
+
+    resolution_rate = (
+        (resolved_problem_count / len(problems)) * 100
+        if problems else 0
+    )
+
+    implemented_solution_count = sum(
+        1 for s in solutions
+        if s.status in {
+            SolutionStatus.IMPLEMENTED,
+            SolutionStatus.VERIFIED,
+        }
+    )
+
+    verification_rate = (
+        (verified_solution_count / implemented_solution_count) * 100
+        if implemented_solution_count else 0
+    )
+
+    # Calculate resolution time using the first CLOSED status-history entry.
+    resolution_durations = []
+
+    for problem in problems:
+        if not problem.created_at:
+            continue
+
+        closed_events = [
+            history
+            for history in problem.status_history
+            if history.status == ProblemStatus.CLOSED.value
+            and history.created_at
+        ]
+
+        if closed_events:
+            closed_at = min(
+                history.created_at for history in closed_events
+            )
+
+            duration_days = (
+                closed_at - problem.created_at
+            ).total_seconds() / 86400
+
+            if duration_days >= 0:
+                resolution_durations.append(duration_days)
+
+    average_resolution_time_days = (
+        sum(resolution_durations) / len(resolution_durations)
+        if resolution_durations else 0
+    )
 
     # Last 6 calendar months, including the current month.
     now = datetime.utcnow()
@@ -93,6 +146,10 @@ def analytics_overview(
         "generated_at": now.isoformat(),
         "totals": {
             "problems": len(problems),
+            "resolution_rate": round(resolution_rate, 2),
+            "verification_rate": round(verification_rate, 2),
+            "average_resolution_time_days": round(average_resolution_time_days, 2),
+            "implemented_solutions": implemented_solution_count,
             "open_problems": sum(
                 1 for p in problems
                 if p.status not in {ProblemStatus.CLOSED, ProblemStatus.REJECTED}
@@ -112,6 +169,7 @@ def analytics_overview(
             "active_industry_partnerships": sum(1 for p in industry_partnerships if p.status == PartnershipStatus.ACTIVE),
             "completed_industry_partnerships": sum(1 for p in industry_partnerships if p.status == PartnershipStatus.COMPLETED),
             "industry_partners": len({p.industry_id for p in industry_partnerships}),
+            "industry_contribution": (len(industry_partnerships) + len(industry_offers)),
         },
         "status_counts": dict(status_counts),
         "priority_counts": dict(priority_counts),
