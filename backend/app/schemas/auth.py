@@ -79,5 +79,14 @@ class CompleteProfileRequest(BaseModel):
     available_support: Optional[str] = None
 
     government_department: Optional[str] = None
+<<<<<<< HEAD
 
     official_id: Optional[str] = None
+=======
+    official_id: Optional[str] = None
+    organization_name: Optional[str] = None
+    organization_type: Optional[str] = None
+    organization_registration_number: Optional[str] = None
+    ward: Optional[str] = None
+    # Government / institutional location can use city/ward; civic organizations also support block/village.
+>>>>>>> origin/main

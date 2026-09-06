@@ -27,6 +27,7 @@ class ProblemMediaResponse(BaseModel):
 class ProblemResponse(BaseModel):
     model_config = ConfigDict(from_attributes=True)
     id: int
+    reporter_type: str
     title: str
     description: str
     category: str

@@ -41,6 +41,11 @@ export default function CompleteProfile() {
     government_department: "",
     official_id: "",
 
+    organization_name: "",
+    organization_type: "",
+    organization_registration_number: "",
+    ward: "",
+
     // Feature 08: Advanced Representative Matching
     availability_status: "AVAILABLE",
     relevant_experience: "",
@@ -154,11 +159,122 @@ export default function CompleteProfile() {
 
           {(form.role === "CITIZEN" ||
             form.role === "UNIVERSITY" ||
-            form.role === "INDUSTRY") && (
+            form.role === "INDUSTRY" ||
+            form.role === "COMMUNITY_GROUP" ||
+            form.role === "PRI" ||
+            form.role === "ULB" ||
+            form.role === "GOVERNMENT") && (
             <LocationFields
               form={form}
               setForm={setForm}
             />
+          )}
+
+          {/* ==================================================
+              COMMUNITY GROUP / PRI / ULB
+          ================================================== */}
+
+          {["COMMUNITY_GROUP", "PRI", "ULB"].includes(form.role) && (
+            <section className="form-section">
+
+              <div className="section-title">
+                {form.role === "COMMUNITY_GROUP"
+                  ? "Community group information"
+                  : form.role === "PRI"
+                    ? "Panchayati Raj Institution information"
+                    : "Urban Local Body information"}
+              </div>
+
+              <div className="grid-2">
+
+                <label>
+                  Organization / Institution Name
+
+                  <input
+                    required
+                    value={form.organization_name}
+                    onChange={(e) =>
+                      setForm({
+                        ...form,
+                        organization_name: e.target.value,
+                        organization_type: form.role
+                      })
+                    }
+                  />
+                </label>
+
+                <label>
+                  Registration / Institution ID
+
+                  <input
+                    value={form.organization_registration_number}
+                    onChange={(e) =>
+                      setForm({
+                        ...form,
+                        organization_registration_number:
+                          e.target.value
+                      })
+                    }
+                  />
+                </label>
+
+                <label>
+                  Representative Designation
+
+                  <input
+                    required
+                    value={form.designation}
+                    onChange={(e) =>
+                      setForm({
+                        ...form,
+                        designation: e.target.value
+                      })
+                    }
+                  />
+                </label>
+
+                {form.role === "ULB" && (
+                  <label>
+                    Ward
+
+                    <input
+                      value={form.ward}
+                      onChange={(e) =>
+                        setForm({
+                          ...form,
+                          ward: e.target.value
+                        })
+                      }
+                    />
+                  </label>
+                )}
+
+                {form.role === "ULB" && (
+                  <label>
+                    City / Town
+
+                    <input
+                      value={form.city}
+                      onChange={(e) =>
+                        setForm({
+                          ...form,
+                          city: e.target.value
+                        })
+                      }
+                    />
+                  </label>
+                )}
+
+              </div>
+
+              <div className="notice">
+                This account is PENDING until administrator
+                verification. Once approved, it can submit and
+                track societal challenges on behalf of the
+                organization.
+              </div>
+
+            </section>
           )}
 
           {/* ==================================================

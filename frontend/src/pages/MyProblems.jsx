@@ -2,9 +2,11 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
 import api from "../services/api";
+import { useAuth } from "../context/AuthContext";
 
 export default function MyProblems() {
   const navigate = useNavigate();
+  const { user } = useAuth();
 
   const [problems, setProblems] =
     useState([]);
@@ -37,13 +39,13 @@ export default function MyProblems() {
       <div className="dashboard-head">
         <div>
           <div className="eyebrow">
-            CITIZEN
+            {user?.role === "GOVERNMENT" ? "GOVERNMENT DEPARTMENT" : user?.role === "PRI" ? "PANCHAYATI RAJ INSTITUTION" : user?.role === "ULB" ? "URBAN LOCAL BODY" : user?.role === "COMMUNITY_GROUP" ? "COMMUNITY GROUP" : "CITIZEN"}
           </div>
 
           <h1>My Problems</h1>
 
           <p className="muted">
-            Track problems you have reported.
+            Track societal challenges submitted by you or your represented organization.
           </p>
         </div>
 

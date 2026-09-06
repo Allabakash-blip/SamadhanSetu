@@ -401,3 +401,46 @@ SamadhanSetu currently implements the core end-to-end social innovation workflow
 
 **Citizen Challenge → AI Classification → Institutional Matching → Assignment → Solution → Industry Partnership → Implementation → Citizen Verification → Impact Analytics**
 
+
+
+## Feature 06 — Multi-Actor Citizen Engagement
+
+The challenge submission module now supports the five expected societal challenge submitter types:
+
+- **Individual Citizen**
+- **Community Group**
+- **Panchayati Raj Institution (PRI)**
+- **Urban Local Body (ULB)**
+- **Government Department**
+
+All submitter types use the same end-to-end challenge workflow with role-aware profiles and access control.
+
+### Challenge submission capabilities
+
+- Problem title, description and category
+- Affected population
+- Supporting/additional details
+- Multiple image evidence uploads
+- Multiple video evidence uploads
+- State → District → Block/Mandal → Village location hierarchy
+- Address / landmark
+- Pincode
+- Browser GPS latitude/longitude capture
+- Backend validation of hierarchical location relationships
+- Reporter type recorded against every challenge
+- Role-based ownership and access to submitted challenges
+- Organization/department accounts remain pending until administrator verification
+- Existing citizens remain active and can submit immediately
+- Admin can distinguish individual, community, PRI, ULB and government submissions
+
+### Institutional submitter profiles
+
+Community Groups, PRIs and ULBs have dedicated civic organization profiles containing organization identity, representative designation, registration/reference information and location. Government representatives retain department and official identity information.
+
+### Existing database compatibility
+
+Startup compatibility migrations are included for existing MySQL installations. They extend the user role enum and add the challenge `reporter_type` field without requiring the existing project database to be deleted.
+
+### Important
+
+Feature 07 (real local AI classification) is intentionally separate. The current change only completes the citizen/challenge engagement layer.

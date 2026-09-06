@@ -11,6 +11,7 @@ from app.models.user import (
     UniversityProfile,
     IndustryProfile,
     GovernmentProfile,
+    CivicOrganizationProfile
 )
 from app.schemas.auth import (
     RegisterRequest,
@@ -390,25 +391,9 @@ def complete_profile(
     # GOVERNMENT PROFILE
     # ---------------------------------------------------------
     elif role == "GOVERNMENT":
-
-        if not payload.government_department:
-            raise HTTPException(
-                400,
-                "Government department is required"
-            )
-
-        profile = (
-            current_user.government_profile
-            or GovernmentProfile(
-                user_id=current_user.id,
-                department=payload.government_department,
-            )
-        )
-
-        profile.department = (
-            payload.government_department
-        )
-
+        if not payload.government_department: raise HTTPException(400, "Government department is required")
+        profile = current_user.government_profile or GovernmentProfile(user_id=current_user.id, department=payload.government_department)
+        profile.department = payload.government_department
         profile.designation = payload.designation
         profile.official_id = payload.official_id
         profile.state_id = payload.state_id
@@ -436,14 +421,8 @@ def complete_profile(
 
         current_user.account_status = AccountStatus.PENDING
 
-    db.commit()
-    db.refresh(current_user)
-
-    return {
-        "message": "Profile completed",
-        "user": user_dict(current_user),
-    }
-
+    db.commit(); db.refresh(current_user)
+    return {"message": "Profile completed", "user": user_dict(current_user)}
 
 @router.get("/me")
 def me(
